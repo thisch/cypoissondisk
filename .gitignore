@@ -1,0 +1,4 @@
+*.so
+poissondisk.cpp
+build/
+__pycache__/
