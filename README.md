@@ -9,4 +9,8 @@ This project wraps the [C++ Poisson Disk Generator by Sergey Kosarevsky](https:/
 
 # Run unit tests
 
-    py.test
+```
+py.test
+py.test --interactive  # unskip interactive tests (matplotlib plots are shown)
+```
+

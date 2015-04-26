@@ -1,58 +1,23 @@
-import logging 
+import logging
+from unittest import TestCase
 
+import pytest
 import numpy as np
 from scipy.spatial import distance
 
 from poissondisk import generate_circ_poisson_points as gpp
 from poissondisk import generate_rect_poisson_points as grpp
 
-from unittest import TestCase
+LG = logging.getLogger('cypoisson')
 
 
 class TestBase(TestCase):
 
     def setUp(self):
-        self.log = logging.getLogger()
+        self.log = LG
 
     def highlight(self, text):
         self.log.info(text.center(80, '#'))
-
-
-class TestPoisson(TestBase):
-    """
-    TODO
-    unterschiedliche seeds muessen unterschiedliche konfigs erzeugen
-    gleiche seeds gleiche konfigs
-    distance_border
-    max distance ~ ddisk-distanceborder
-
-    """
-
-    def test_1(self):
-        self.rdisk = 350.
-        self.rscat = 10.
-        desired_ff = 0.4
-        self.points = gpp(0, rdisk=self.rdisk, rscat=self.rscat,
-                          ff=desired_ff)
-        lp = len(self.points)
-        self.assertGreater(lp, 0)
-        ff = lp*10**2./350**2
-        self.log.info('desired ff %g, actual ff %g', desired_ff, ff)
-        self.assertLess(abs(desired_ff - ff), 0.03)
-        self.ff, self.desired_ff = ff, desired_ff
-
-    def test_1_r(self):
-        self.h = self.w = 700.
-        self.rscat = 10.
-        desired_ff = 0.45
-        self.points = grpp(1, w=self.w, h=self.h, rscat=self.rscat,
-                           ff=desired_ff)
-        lp = len(self.points)
-        self.assertGreater(lp, 0)
-        ff = lp*np.pi*10**2./700**2
-        self.log.info('desired ff %g, actual ff %g', desired_ff, ff)
-        self.assertLess(abs(desired_ff - ff), 0.05)
-        self.ff, self.desired_ff = ff, desired_ff
 
     def _plot(self, rect=False):
         points = np.array(self.points)
@@ -100,13 +65,60 @@ class TestPoisson(TestBase):
                 lp, self.rdisk*2, self.ff))
         plt.show()
 
+
+class TestPoisson(TestBase):
+    """
+    TODO
+    unterschiedliche seeds muessen unterschiedliche konfigs erzeugen
+    gleiche seeds gleiche konfigs
+    distance_border
+    max distance ~ ddisk-distanceborder
+
+    """
+
+    def test_1(self):
+        self.rdisk = 350.
+        self.rscat = 10.
+        desired_ff = 0.4
+        self.points = gpp(0, rdisk=self.rdisk, rscat=self.rscat,
+                          ff=desired_ff)
+        lp = len(self.points)
+        self.assertGreater(lp, 0)
+        ff = lp*10**2./350**2
+        self.log.info('desired ff %g, actual ff %g', desired_ff, ff)
+        self.assertLess(abs(desired_ff - ff), 0.03)
+        self.ff, self.desired_ff = ff, desired_ff
+
+    def test_1_rectangle(self):
+        self.h = self.w = 700.
+        self.rscat = 10.
+        desired_ff = 0.45
+        self.points = grpp(1, w=self.w, h=self.h, rscat=self.rscat,
+                           ff=desired_ff)
+        lp = len(self.points)
+        self.assertGreater(lp, 0)
+        ff = lp*np.pi*self.rscat**2./(self.w*self.h)
+        self.log.info('desired ff %g, actual ff %g', desired_ff, ff)
+        self.assertLess(abs(desired_ff - ff), 0.05)
+        self.ff, self.desired_ff = ff, desired_ff
+
+    @pytest.mark.skipif('not config.getvalue("interactive")')
+    def test_1_plot(self):
+        self.test_1()
+        self._plot()
+
+    @pytest.mark.skipif('not config.getvalue("interactive")')
+    def test_1_rectangle_plot(self):
+        self.test_1_rectangle()
+        self._plot(rect=True)
+
     def test_2(self):
         self.rdisk = 350.
         self.rscat = 10.
         prevlp = 0
         for desired_ff in np.linspace(0.05, 0.4, 8):
             points = gpp(1, rdisk=self.rdisk, rscat=self.rscat, ff=desired_ff)
-            ff = len(points)*10**2./350**2
+            ff = len(points)*self.rscat**2./self.rdisk**2
             self.log.info('desired ff %g, actual ff %g', desired_ff, ff)
             self.assertLess(abs(desired_ff - ff), 0.03)
             self.assertGreater(len(points), prevlp)
@@ -183,9 +195,11 @@ class TestPoisson(TestBase):
                           ff=desired_ff, allow_disks_on_boundary=True)
         lp = len(self.points)
         self.assertGreater(lp, 0)
-        ff = lp*10**2./350**2  # TODO this is not the correct expression for
-                               # the filling fraction as some of the
-                               # scatterers lie outside the disk
+        ff = lp*self.rscat**2./self.rdisk**2  # TODO this is not the correct
+                                              # expression for the filling
+                                              # fraction as some of the
+                                              # scatterers lie outside the
+                                              # disk
         self.log.info('desired ff %g, actual ff %g', desired_ff, ff)
         self.assertLess(abs(desired_ff - ff), 0.01)
         self.ff, self.desired_ff = ff, desired_ff
