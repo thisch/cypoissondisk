@@ -14,5 +14,6 @@ py.test
 py.test --interactive  # unskip interactive tests (matplotlib plots are
 shown)
 py.test --nocapturelog -s  # shows the log output
+py.test test_poisson.py::TestPoisson::test_4_plot --interactive  # run a single test
 ```
 

@@ -13,11 +13,8 @@ LG = logging.getLogger('cypoisson')
 
 class TestBase(TestCase):
 
-    def setUp(self):
-        self.log = LG
-
     def highlight(self, text):
-        self.log.info(text.center(80, '#'))
+        LG.info(text.center(80, '#'))
 
     def _plot(self, rect=False):
         points = np.array(self.points)
@@ -38,8 +35,7 @@ class TestBase(TestCase):
         try:
             w = h = 2*self.rdisk
         except AttributeError:
-            w = self.w
-            h = self.h
+            w, h = self.w, self.h
         if rect:
             patches.append(Rectangle((-w/2., -h/2.), w, h))
         else:
@@ -84,8 +80,8 @@ class TestPoisson(TestBase):
                           ff=desired_ff)
         lp = len(self.points)
         self.assertGreater(lp, 0)
-        ff = lp*10**2./350**2
-        self.log.info('desired ff %g, actual ff %g', desired_ff, ff)
+        ff = lp*self.rscat**2./self.rdisk**2
+        LG.info('desired ff %g, actual ff %g', desired_ff, ff)
         self.assertLess(abs(desired_ff - ff), 0.03)
         self.ff, self.desired_ff = ff, desired_ff
 
@@ -98,7 +94,7 @@ class TestPoisson(TestBase):
         lp = len(self.points)
         self.assertGreater(lp, 0)
         ff = lp*np.pi*self.rscat**2./(self.w*self.h)
-        self.log.info('desired ff %g, actual ff %g', desired_ff, ff)
+        LG.info('desired ff %g, actual ff %g', desired_ff, ff)
         self.assertLess(abs(desired_ff - ff), 0.05)
         self.ff, self.desired_ff = ff, desired_ff
 
@@ -119,7 +115,7 @@ class TestPoisson(TestBase):
         for desired_ff in np.linspace(0.05, 0.4, 8):
             points = gpp(1, rdisk=self.rdisk, rscat=self.rscat, ff=desired_ff)
             ff = len(points)*self.rscat**2./self.rdisk**2
-            self.log.info('desired ff %g, actual ff %g', desired_ff, ff)
+            LG.info('desired ff %g, actual ff %g', desired_ff, ff)
             self.assertLess(abs(desired_ff - ff), 0.03)
             self.assertGreater(len(points), prevlp)
             levlp = len(points)
@@ -136,7 +132,7 @@ class TestPoisson(TestBase):
                                    ff=desired_ff))
         self.assertGreater(len(self.points), 0)
         ff = len(self.points)*self.rscat**2./self.rdisk**2
-        self.log.info('desired ff %g, actual ff %g', desired_ff, ff)
+        LG.info('desired ff %g, actual ff %g', desired_ff, ff)
         self.assertLess(abs(desired_ff - ff), 0.03)
         self.ff, self.desired_ff = ff, desired_ff
 
@@ -150,8 +146,8 @@ class TestPoisson(TestBase):
         maxdist = dists.max()
         self.assertGreater(mindist, 2*self.rscat)
 
-        self.log.info("mindist: %g\tnet mindist: %g\tmaxdist: %g",
-                      mindist, mindist - 2*self.rscat, maxdist)
+        LG.info("mindist: %g\tnet mindist: %g\tmaxdist: %g",
+                mindist, mindist - 2*self.rscat, maxdist)
         self.assertGreater(maxdist, self.rdisk*2*0.9)
 
     def test_3_loop(self):
@@ -167,7 +163,7 @@ class TestPoisson(TestBase):
                                        ff=desired_ff))
             self.assertGreater(len(self.points), 0)
             ff = len(self.points)*self.rscat**2./self.rdisk**2
-            self.log.info('desired ff %g, actual ff %g', desired_ff, ff)
+            LG.info('desired ff %g, actual ff %g', desired_ff, ff)
             self.assertLess(abs(desired_ff - ff), 0.03)
             self.ff, self.desired_ff = ff, desired_ff
 
@@ -180,8 +176,8 @@ class TestPoisson(TestBase):
             maxdist = dists.max()
             self.assertGreater(mindist, 2*self.rscat)
 
-            self.log.info("FF %g:\tmindist: %g\tnet mindist: %g\tmaxdist: %g",
-                          self.ff, mindist, mindist - 2*self.rscat, maxdist)
+            LG.info("FF %g:\tmindist: %g\tnet mindist: %g\tmaxdist: %g",
+                    self.ff, mindist, mindist - 2*self.rscat, maxdist)
             self.assertGreater(maxdist, self.rdisk*2*0.9)
 
     def test_4(self):
@@ -200,11 +196,15 @@ class TestPoisson(TestBase):
                                               # fraction as some of the
                                               # scatterers lie outside the
                                               # disk
-        self.log.info('desired ff %g, actual ff %g', desired_ff, ff)
+        LG.info('desired ff %g, actual ff %g', desired_ff, ff)
         self.assertLess(abs(desired_ff - ff), 0.01)
         self.ff, self.desired_ff = ff, desired_ff
 
         expr = [abs(p) > self.rdisk-self.rscat for p in self.points]
-        self.log.info("%d scats lie on the boundary", sum(expr))
+        LG.info("%d scats lie on the boundary", sum(expr))
         assert any(expr)
-        # self._plot()
+
+    @pytest.mark.skipif('not config.getvalue("interactive")')
+    def test_4_plot(self):
+        self.test_4()
+        self._plot()
