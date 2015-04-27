@@ -11,6 +11,8 @@ This project wraps the [C++ Poisson Disk Generator by Sergey Kosarevsky](https:/
 
 ```
 py.test
-py.test --interactive  # unskip interactive tests (matplotlib plots are shown)
+py.test --interactive  # unskip interactive tests (matplotlib plots are
+shown)
+py.test --nocapturelog -s  # shows the log output
 ```
 
