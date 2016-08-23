@@ -79,10 +79,10 @@ class TestPoisson(TestBase):
         self.points = gpp(0, rdisk=self.rdisk, rscat=self.rscat,
                           ff=desired_ff)
         lp = len(self.points)
-        self.assertGreater(lp, 0)
+        assert lp > 0
         ff = lp*self.rscat**2./self.rdisk**2
         LG.info('desired ff %g, actual ff %g', desired_ff, ff)
-        self.assertLess(abs(desired_ff - ff), 0.03)
+        assert abs(desired_ff - ff) < 0.03
         self.ff, self.desired_ff = ff, desired_ff
 
     def test_1_rectangle(self):
@@ -92,10 +92,10 @@ class TestPoisson(TestBase):
         self.points = grpp(1, w=self.w, h=self.h, rscat=self.rscat,
                            ff=desired_ff)
         lp = len(self.points)
-        self.assertGreater(lp, 0)
+        assert lp > 0
         ff = lp*np.pi*self.rscat**2./(self.w*self.h)
         LG.info('desired ff %g, actual ff %g', desired_ff, ff)
-        self.assertLess(abs(desired_ff - ff), 0.05)
+        assert abs(desired_ff - ff) < .05
         self.ff, self.desired_ff = ff, desired_ff
 
     @pytest.mark.skipif('not config.getvalue("interactive")')
@@ -116,8 +116,8 @@ class TestPoisson(TestBase):
             points = gpp(1, rdisk=self.rdisk, rscat=self.rscat, ff=desired_ff)
             ff = len(points)*self.rscat**2./self.rdisk**2
             LG.info('desired ff %g, actual ff %g', desired_ff, ff)
-            self.assertLess(abs(desired_ff - ff), 0.03)
-            self.assertGreater(len(points), prevlp)
+            assert abs(desired_ff - ff) < 0.03
+            assert len(points) > prevlp
             levlp = len(points)
 
     def test_3(self):
@@ -133,7 +133,7 @@ class TestPoisson(TestBase):
         self.assertGreater(len(self.points), 0)
         ff = len(self.points)*self.rscat**2./self.rdisk**2
         LG.info('desired ff %g, actual ff %g', desired_ff, ff)
-        self.assertLess(abs(desired_ff - ff), 0.03)
+        assert abs(desired_ff - ff) < 0.03
         self.ff, self.desired_ff = ff, desired_ff
 
         assert all(np.abs(self.points) < self.rdisk - self.rscat)
@@ -144,11 +144,11 @@ class TestPoisson(TestBase):
         dists = distance.cdist(p, p, 'euclidean')
         mindist = dists[dists > 0].min()
         maxdist = dists.max()
-        self.assertGreater(mindist, 2*self.rscat)
+        assert mindist > 2*self.rscat
 
         LG.info("mindist: %g\tnet mindist: %g\tmaxdist: %g",
                 mindist, mindist - 2*self.rscat, maxdist)
-        self.assertGreater(maxdist, self.rdisk*2*0.9)
+        assert maxdist > self.rdisk*2*0.9
 
     def test_3_loop(self):
         """
@@ -161,10 +161,10 @@ class TestPoisson(TestBase):
             self.highlight("DESIRED FF %g" % desired_ff)
             self.points = np.array(gpp(1, rdisk=self.rdisk, rscat=self.rscat,
                                        ff=desired_ff))
-            self.assertGreater(len(self.points), 0)
+            assert len(self.points) > 0
             ff = len(self.points)*self.rscat**2./self.rdisk**2
             LG.info('desired ff %g, actual ff %g', desired_ff, ff)
-            self.assertLess(abs(desired_ff - ff), 0.03)
+            abs(desired_ff - ff) < 0.03
             self.ff, self.desired_ff = ff, desired_ff
 
             assert all(np.abs(self.points) < self.rdisk - self.rscat)
@@ -174,11 +174,11 @@ class TestPoisson(TestBase):
             dists = distance.cdist(p, p, 'euclidean')
             mindist = dists[dists > 0].min()
             maxdist = dists.max()
-            self.assertGreater(mindist, 2*self.rscat)
+            assert mindist > 2*self.rscat
 
             LG.info("FF %g:\tmindist: %g\tnet mindist: %g\tmaxdist: %g",
                     self.ff, mindist, mindist - 2*self.rscat, maxdist)
-            self.assertGreater(maxdist, self.rdisk*2*0.9)
+            assert maxdist > self.rdisk*2*0.9
 
     def test_4(self):
         """
@@ -190,14 +190,14 @@ class TestPoisson(TestBase):
         self.points = gpp(0, rdisk=self.rdisk, rscat=self.rscat,
                           ff=desired_ff, allow_disks_on_boundary=True)
         lp = len(self.points)
-        self.assertGreater(lp, 0)
+        assert lp > 0
         ff = lp*self.rscat**2./self.rdisk**2  # TODO this is not the correct
                                               # expression for the filling
                                               # fraction as some of the
                                               # scatterers lie outside the
                                               # disk
         LG.info('desired ff %g, actual ff %g', desired_ff, ff)
-        self.assertLess(abs(desired_ff - ff), 0.01)
+        abs(desired_ff - ff) < .01
         self.ff, self.desired_ff = ff, desired_ff
 
         expr = [abs(p) > self.rdisk-self.rscat for p in self.points]
