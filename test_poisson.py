@@ -24,8 +24,7 @@ class TestBase(TestCase):
         from matplotlib.patches import Circle, Rectangle
         from matplotlib.collections import PatchCollection
 
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
+        fig, ax = plt.subplots()
 
         patches = []
         for p in points:
