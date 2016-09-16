@@ -182,8 +182,8 @@ std::vector<sPoint> GeneratePoissonPoints(float MinDist, int NewPointsCount,
   // generate new points for each point in the queue
   while (!ProcessList.empty() && SamplePoints.size() < NumPoints) {
     // a progress indicator, kind of
-    if (SamplePoints.size() % 100 == 0)
-      std::cout << ".";
+    //if (SamplePoints.size() % 100 == 0)
+    //  std::cout << ".";
 
     sPoint Point = PopRandom(ProcessList);
 
@@ -201,7 +201,7 @@ std::vector<sPoint> GeneratePoissonPoints(float MinDist, int NewPointsCount,
     }
   }
 
-  std::cout << std::endl << std::endl;
+  //std::cout << std::endl << std::endl;
 
   return SamplePoints;
 }
@@ -225,7 +225,6 @@ std::vector<sPoint> gen_circ_distribution(unsigned seed, float rdisk_,
 
   std::vector<sPoint> Points =
       GeneratePoissonPoints(MinDistance, k, NumPoints, circle, allow_disks_on_boundary);
-  std::cout <<Points.size() << " Points generated" << std::endl;
 
   double netrdisk = rdisk - distance_border;
   for (auto& p : Points) {
@@ -257,7 +256,6 @@ std::vector<sPoint> gen_rect_distribution(unsigned seed, float w_, float h_,
 
   std::vector<sPoint> Points =
       GeneratePoissonPoints(MinDistance, k, NumPoints, circle, allow_disks_on_boundary);
-  std::cout <<Points.size() << " Points generated" << std::endl;
 
   double netw = w - distance_border;
   double neth = h - distance_border;
