@@ -6,7 +6,7 @@ def setup_logger(nocol=False):
         LG = logging.getLogger(lname)
         try:
             from falafel.logger import Formatter
-            from falafel.logger import nocolors
+            from falafel.logger import NOCOLORS
             LG.setLevel('DEBUG')
             sh = logging.StreamHandler(sys.stdout)
 
