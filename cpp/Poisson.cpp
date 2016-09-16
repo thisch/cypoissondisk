@@ -206,16 +206,6 @@ std::vector<sPoint> GeneratePoissonPoints(float MinDist, int NewPointsCount,
   return SamplePoints;
 }
 
-void PrintBanner() {
-  std::cout << "Poisson disk points generator" << std::endl;
-  std::cout << "Sergey Kosarevsky, 2014" << std::endl;
-  std::cout << std::endl;
-
-  std::cout << "Numpoints " << NumPoints << std::endl;
-  std::cout << "dscat " << rscat * 2 << std::endl;
-  std::cout << "MinDist " << MinDistance * rdisk * 2 << std::endl;
-}
-
 std::vector<sPoint> gen_circ_distribution(unsigned seed, float rdisk_,
                                           float rscat_, float ff_, float distance_border_,
                                           bool allow_disks_on_boundary=false) {
@@ -232,8 +222,6 @@ std::vector<sPoint> gen_circ_distribution(unsigned seed, float rdisk_,
   MinDistance = 1. / sqrt(float(2 * NumPoints));
 
   bool circle = true; // all points lie within a circle
-
-  PrintBanner();
 
   std::vector<sPoint> Points =
       GeneratePoissonPoints(MinDistance, k, NumPoints, circle, allow_disks_on_boundary);
@@ -266,8 +254,6 @@ std::vector<sPoint> gen_rect_distribution(unsigned seed, float w_, float h_,
   MinDistance = 1. / sqrt(float(1.55*NumPoints));
 
   bool circle = false; // all points lie within a rectangle
-
-  PrintBanner();
 
   std::vector<sPoint> Points =
       GeneratePoissonPoints(MinDistance, k, NumPoints, circle, allow_disks_on_boundary);
